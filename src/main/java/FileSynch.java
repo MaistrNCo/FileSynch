@@ -1,41 +1,49 @@
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.stream.Stream;
+
 
 public class FileSynch {
     public static void main(String[] args) {
-        String source = "/home/maistrenko/Java/FileSynch";
-        Path pathIn  = Paths.get(source,"");
-        String destination = "/home/maistrenko/Java/FileSynch/dest";
-        Path pathOut  = Paths.get(destination);
-        try {
-            Stream s = Files.list(pathIn);
+        if (args.length != 2) {
+            System.out.println("Wrong parameters amount ");
+            return;
+        }
+        String source = args[0];
+        String destination = args[1];
 
+        synchronise(source, destination);
+    }
+
+    private static void synchronise(String source, String destination) {
+        Path pathIn = Paths.get(source);
+        Path pathOut = Paths.get(destination);
+        try {
             Files.walkFileTree(pathIn, new FileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    System.out.println("dir: " + dir + " folder : " + dir.getFileName());
-                    String currTargetPath = dir.toString().replaceFirst(source,destination);
+                    //System.out.println("dir: " + dir + " folder : " + dir.getFileName());
+                    String currTargetPath = dir.toString().replaceFirst(source, destination);
                     try {
-                        Files.copy(dir,Paths.get(currTargetPath));
-
+                        Files.copy(dir, Paths.get(currTargetPath));
+                        System.out.println("copied  directory: " + currTargetPath);
                     } catch (IOException e) {
-                        System.out.println(" file " + currTargetPath + " already exist ");
+                        System.out.println("path already exist: " + currTargetPath);
                     }
-                    findFile(dir,dir.getFileName().toString());
+                    //findFile(dir,dir.getFileName().toString());
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    System.out.println(file.toRealPath());
-                    findFile(file,file.getFileName().toString());
+                    //System.out.println(file.toRealPath());
+                    //findFile(file,file.getFileName().toString());
                     String currTargetPath = file.toString().replaceFirst(pathIn.toString(), pathOut.toString());
                     try {
                         Files.copy(file, Paths.get(currTargetPath));
+                        System.out.println("copied  file: " + currTargetPath);
                     } catch (IOException e) {
-                        System.out.println(" file " + currTargetPath + " already exist ");
+                        System.out.println("file already exist: " + currTargetPath);
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -51,34 +59,26 @@ public class FileSynch {
                 }
             });
 
-//            Iterator<Path> iterator = s.iterator();
-//            while (iterator.hasNext()) {
-//                Path file = iterator.next();
-//
-//                System.out.println(file.toAbsolutePath() + " is direcory : " + Files.isDirectory(file));
-//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-    static void findFile(Path path, String fileToFind){
+
+    static void findFile(Path path, String fileToFind) {
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     String fileString = file.toAbsolutePath().toString();
-                    //System.out.println("pathString = " + fileString);
-
-                    if(fileString.endsWith(fileToFind)){
+                    if (fileString.endsWith(fileToFind)) {
                         System.out.println("file found at path: " + file.toAbsolutePath());
                         return FileVisitResult.TERMINATE;
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
-        } catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
