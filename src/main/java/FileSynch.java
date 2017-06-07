@@ -20,10 +20,64 @@ class FileSynch {
                 return;
             }
             FileSynch fs = new FileSynch();
-            fs.synchronise(source, destination);
+            //fs.synchronise(source, destination);
+            fs.walkThru(Paths.get(source));
         } else {
             System.out.println("");
         }
+    }
+
+    public void  walkThru(Path source){
+        try {
+            Stream<Path> pathStream = Files.walk(source,FileVisitOption.FOLLOW_LINKS);
+            Iterator<Path> iterator = pathStream.iterator();
+            while (iterator.hasNext()){
+                System.out.println(iterator.next());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void checkDestination(Path destination,Path source){
+
+        try {
+            Files.walkFileTree(destination, new FileVisitor<Path>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    return null;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Path relativePath = destination.relativize(file);
+                    Path currDestinationPath = source.resolve(relativePath);
+                    if (Files.notExists(currDestinationPath)) {
+                        try {
+                            Files.delete(file);
+                            System.out.println("deleted " + file);
+                        } catch (DirectoryNotEmptyException e){
+
+                            System.out.println("DirectoryNotEmptyException " + file);
+                        }
+                    }
+                    return null;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    return null;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    return null;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public  void synchronise(String source, String destination) {
@@ -33,7 +87,6 @@ class FileSynch {
             Files.walkFileTree(pathSource, new FileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    removeDeletedContent(dir);
                     copyDirectoriesToDest(dir);
                     return FileVisitResult.CONTINUE;
                 }
@@ -51,6 +104,7 @@ class FileSynch {
 
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    removeDeletedContent(dir);
                     return FileVisitResult.CONTINUE;
                 }
 
