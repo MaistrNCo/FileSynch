@@ -24,8 +24,8 @@ class FileSynch {
 
     public void sync(Path source, Path destination) {
         try {
-            Files.walkFileTree(source, new MyCopier<>(source, destination));
             Files.walkFileTree(destination, new MyCleaner<>(source, destination));
+            Files.walkFileTree(source, new MyCopier<>(source, destination));
 
         } catch (IOException e) {
             e.printStackTrace();

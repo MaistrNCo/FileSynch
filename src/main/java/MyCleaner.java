@@ -45,11 +45,14 @@ class MyCleaner<P extends Path> implements FileVisitor<P> {
                 try {
                     Files.delete(path);
                     System.out.println("\tdeleted " + path);
+                } catch (AccessDeniedException e) {
+                    System.out.println("\tAccess denied to directory " + path);
                 } catch (DirectoryNotEmptyException e){
                     System.out.println("\tDirectory " + path + " is not empty");
                 }
             }
         }
+        destPathContent.close();
     }
 
 }

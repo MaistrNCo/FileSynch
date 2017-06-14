@@ -38,7 +38,7 @@ class MyCopier<P extends Path> implements FileVisitor<P> {
         java.nio.file.Path currDestinationPath = destination.resolve(relativePath);
         try {
             Files.copy(dir, currDestinationPath);
-            System.out.println("copied  directory: " + currDestinationPath);
+            System.out.println("copied new directory: " + currDestinationPath);
         } catch (FileAlreadyExistsException e) {
             //System.out.println("path already exist: " + currDestinationPath);
         } catch (IOException e) {
@@ -51,7 +51,7 @@ class MyCopier<P extends Path> implements FileVisitor<P> {
         java.nio.file.Path currDestinationPath = destination.resolve(relativePath);
         try {
             Files.copy(file, currDestinationPath);
-            System.out.println("copied  file: " + currDestinationPath);
+            System.out.println("copied new file: " + currDestinationPath);
         } catch (FileAlreadyExistsException e) {
             if (Files.size(file) != Files.size(currDestinationPath)) {
                 Files.copy(file, currDestinationPath, StandardCopyOption.REPLACE_EXISTING);
