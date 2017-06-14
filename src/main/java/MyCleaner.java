@@ -4,9 +4,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-public class MyCleaner<P extends Path> implements FileVisitor<P> {
-    Path source;
-    Path destination;
+class MyCleaner<P extends Path> implements FileVisitor<P> {
+    private Path source;
+    private Path destination;
 
     public MyCleaner(Path source, Path destination) {
         this.source = source;

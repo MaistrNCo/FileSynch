@@ -2,9 +2,9 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
-public class MyCopier<P extends Path> implements FileVisitor<P> {
-    Path source;
-    Path destination;
+class MyCopier<P extends Path> implements FileVisitor<P> {
+    private Path source;
+    private Path destination;
 
     public MyCopier(Path source, Path destination) {
         this.source = source;
