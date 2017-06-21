@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
-class MyCopier<P extends Path> implements FileVisitor<P> {
+class MyCopier<P extends Path> extends SimpleFileVisitor<P> {
     private Path source;
     private Path destination;
 
@@ -20,16 +20,6 @@ class MyCopier<P extends Path> implements FileVisitor<P> {
     @Override
     public FileVisitResult visitFile(P file, BasicFileAttributes attrs) throws IOException {
         copyFilesToDest(file);
-        return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult visitFileFailed(P file, IOException exc) throws IOException {
-        return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult postVisitDirectory(P dir, IOException exc) throws IOException {
         return FileVisitResult.CONTINUE;
     }
 
